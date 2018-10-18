@@ -1,0 +1,23 @@
+{
+    "name": "apache02/yii2-semantic-ui",
+    "description": "Semantic UI extension for Yii2 framework",
+    "type": "yii2-extension",
+    "keywords": ["yii2","semantic-ui"],
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Apache02",
+            "email": "gxad02@gmail.com"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "~2.0.15",
+		"nezhelskoy/yii2-highlight": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "semantic\\": "src"
+        }
+    }
+}
+	

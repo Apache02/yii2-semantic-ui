@@ -1,0 +1,22 @@
+.ui.sortable.table > thead > tr > th {
+	padding-top: 0;
+	padding-bottom: 0;
+	line-height: 3.28564286em;
+}
+.ui.sortable.table > thead > tr > th > a {
+	display: inline-block;
+	min-width: calc(100% - 1em);
+}
+
+.ui.fitted.divider {
+	margin: 0 !important;
+}
+
+.ui.form .field > .ui.error.label,
+.ui.form .field > .ui.checkbox > .ui.error.label {
+	display: none;
+}
+.ui.form .field.error > .ui.error.label,
+.ui.form .field.error > .ui.checkbox > .ui.error.label {
+	display: inline-block;
+}
