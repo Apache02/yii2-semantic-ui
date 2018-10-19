@@ -57,14 +57,6 @@ class Menu extends Widget
 				throw new Exception('Type "'.$type.'" is not allowed for menu');
 			}
 		}
-		
-		// resolve tag name from options
-		foreach ( ['tag'] as $attr ) {
-			if ( isset($options[$attr]) ) {
-				$this->tagName = $options[$attr];
-				unset($options[$attr]);
-			}
-		}
 	}
 	
 	public function isItemActive ( $item )

@@ -1,0 +1,5 @@
+# windows thumbnail cache
+Thumbs.db
+
+/.scannerwork
+/test.bat
