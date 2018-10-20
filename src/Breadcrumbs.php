@@ -2,6 +2,7 @@
 
 namespace semantic;
 
+use Yii;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use yii\base\Exception;
@@ -18,7 +19,7 @@ class Breadcrumbs extends \yii\widgets\Breadcrumbs
 	public $size = null;
 	public $itemTemplate = "<div class=\"section\">{link}</div>\n";
 	public $activeItemTemplate = "<div class=\"active section\">{link}</div>";
-	public $separator = '<i class="right chevron icon divider"></i>';
+	public $divider = '<i class="right chevron icon divider"></i>';
 	
 	
 	/**
@@ -49,6 +50,7 @@ class Breadcrumbs extends \yii\widgets\Breadcrumbs
 		if ( !empty($this->size) && in_array($this->size, static::SIZE_TYPES) ) {
 			Html::addCssClass($options, $this->size);
 		}
-		echo Html::tag($this->tag, implode($this->separator, $links), $options);
+		$options['id'] = $this->id;
+		echo Html::tag($this->tag, implode($this->divider, $links), $options);
 	}
 }
