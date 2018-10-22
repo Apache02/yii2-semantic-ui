@@ -20,3 +20,17 @@
 .ui.form .field.error > .ui.checkbox > .ui.error.label {
 	display: inline-block;
 }
+
+.ui.menu form.item.logout {
+	padding: 0;
+}
+.ui.menu form.item.logout > button.submit {
+	border: none;
+	margin: 0;
+	padding: .92857143em 1.14285714em;
+	background: none;
+	height: 100%;
+	cursor: pointer;
+	outline: none;
+	font: inherit;
+}
