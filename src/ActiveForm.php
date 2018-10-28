@@ -54,6 +54,9 @@ class ActiveForm extends \yii\widgets\ActiveForm
 		}
 		$type = array_intersect($type, self::MESSAGE_TYPES);
 		if ( $type ) {
+			if ( in_array('error', $type) ) {
+				$type[] = 'visible';
+			}
 			Html::addCssClass($options, implode(' ', $type));
 		}
 		if ( ArrayHelper::remove($options, 'closeable', false) ) {
