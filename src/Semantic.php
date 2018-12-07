@@ -33,7 +33,7 @@ class Semantic
 	
 	public static function getVersion ()
 	{
-		return '2.3.3';
+		return '2.4.1';
 	}
 	
 	public static function wide ( $n )

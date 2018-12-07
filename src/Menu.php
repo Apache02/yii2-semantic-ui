@@ -2,6 +2,7 @@
 
 namespace semantic;
 
+use Yii;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use yii\base\Exception;
@@ -37,10 +38,12 @@ class Menu extends Widget
 	public $type = [];
 	
 	public $items = [];
-	public $itemActiveClass = 'active';
+	public $activeCssClass = 'active';
 	public $labelTemplate = '{icon} {label} {dropdown}';
 	public $labelTemplateSubmenu = '{dropdown} {icon} {label}';
 	public $container = false;
+	
+	public $route = null;
 	
 	
 	
@@ -57,11 +60,38 @@ class Menu extends Widget
 				throw new Exception('Type "'.$type.'" is not allowed for menu');
 			}
 		}
+		if ( $this->route === null && Yii::$app->controller !== null ) {
+			$this->route = Yii::$app->controller->getRoute();
+		}
 	}
 	
+	/**
+	 * Checks whether a menu item is active.
+	 * be considered active.
+	 * @param array $item the menu item to be checked
+	 * @return bool whether the menu item is active
+	 */
+	protected function isItemActive ( $item )
+	{
+		if ( isset($item['url']) && is_array($item['url']) && isset($item['url'][0]) ) {
+			$route = Yii::getAlias($item['url'][0]);
+			if ( $route[0] !== '/' && Yii::$app->controller ) {
+				$route = Yii::$app->controller->module->getUniqueId() . '/' . $route;
+			}
+			if ( ltrim($route, '/') !== $this->route ) {
+				return false;
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+	/*
 	public function isItemActive ( $item )
 	{
 	}
+	*/
 	
 	public function run ()
 	{
@@ -154,7 +184,7 @@ class Menu extends Widget
 			$item['active'] = $this->isItemActive($item);
 		}
 		if ( $item['active'] ) {
-			Html::addCssClass($options, $this->itemActiveClass);
+			Html::addCssClass($options, $this->activeCssClass);
 		}
 		if ( !empty($item['disabled']) && !in_array('disabled', explode(' ', $options['class'])) ) {
 			Html::addCssClass($options, 'disabled');

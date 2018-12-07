@@ -16,7 +16,8 @@ class ModalAjaxForm extends Widget
 	public $loaderHtml = null;
 	
 	public $modalActions = null;
-	public $options = ['class'=>'ui small basic modal'];
+	public $options = ['class'=>'ui small modal'];
+	public $styleBasic = false;
 	
 	
 	
@@ -36,6 +37,9 @@ class ModalAjaxForm extends Widget
 		if ( empty($this->actionSelector) || !is_string($this->actionSelector) ) {
 			throw new Exception('Attribute "actionSelector" must be a string.');
 		}
+		if ( $this->styleBasic ) {
+			Html::addCssClass($this->options, 'basic');
+		}
 		if ( !$this->modalActions ) {
 			$this->modalActions = [
 				'ok'	=> [
@@ -46,7 +50,7 @@ class ModalAjaxForm extends Widget
 				],
 				'close' => [
 					'action'	=> 'close',
-					'class'		=> 'red basic inverted',
+					'class'		=> 'red inverted' . ($this->styleBasic ? ' basic':''),
 					'label'		=> Yii::t('semantic', 'Cancel'),
 					'icon'		=> 'remove',
 				],
