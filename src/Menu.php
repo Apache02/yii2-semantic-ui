@@ -2,6 +2,7 @@
 
 namespace semantic;
 
+use Yii;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use yii\base\Exception;
@@ -23,7 +24,8 @@ class Menu extends Widget
 //		'right floated',
 		'inverted',
 		'secondary',
-		'tabular'
+		'tabular',
+		'vertical',
 	];
 	
 	public $itemAliases = [
@@ -37,10 +39,13 @@ class Menu extends Widget
 	public $type = [];
 	
 	public $items = [];
-	public $itemActiveClass = 'active';
+	public $activeCssClass = 'active';
 	public $labelTemplate = '{icon} {label} {dropdown}';
 	public $labelTemplateSubmenu = '{dropdown} {icon} {label}';
 	public $container = false;
+	
+	public $route = null;
+	public $allowDropdown = true;
 	
 	
 	
@@ -57,11 +62,38 @@ class Menu extends Widget
 				throw new Exception('Type "'.$type.'" is not allowed for menu');
 			}
 		}
+		if ( $this->route === null && Yii::$app->controller !== null ) {
+			$this->route = Yii::$app->controller->getRoute();
+		}
 	}
 	
+	/**
+	 * Checks whether a menu item is active.
+	 * be considered active.
+	 * @param array $item the menu item to be checked
+	 * @return bool whether the menu item is active
+	 */
+	protected function isItemActive ( $item )
+	{
+		if ( isset($item['url']) && is_array($item['url']) && isset($item['url'][0]) ) {
+			$route = Yii::getAlias($item['url'][0]);
+			if ( $route[0] !== '/' && Yii::$app->controller ) {
+				$route = Yii::$app->controller->module->getUniqueId() . '/' . $route;
+			}
+			if ( ltrim($route, '/') !== $this->route ) {
+				return false;
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+	/*
 	public function isItemActive ( $item )
 	{
 	}
+	*/
 	
 	public function run ()
 	{
@@ -117,7 +149,9 @@ class Menu extends Widget
 		} else {
 			
 			if ( !empty($item['items']) ) {
-				if ( empty($item['dropdown']) ) {
+				if ( !$this->allowDropdown ) {
+					$item['dropdown'] = false;
+				} else if ( empty($item['dropdown']) ) {
 					$item['dropdown'] = true;
 				}
 				$item['tag'] = 'div';
@@ -154,7 +188,7 @@ class Menu extends Widget
 			$item['active'] = $this->isItemActive($item);
 		}
 		if ( $item['active'] ) {
-			Html::addCssClass($options, $this->itemActiveClass);
+			Html::addCssClass($options, $this->activeCssClass);
 		}
 		if ( !empty($item['disabled']) && !in_array('disabled', explode(' ', $options['class'])) ) {
 			Html::addCssClass($options, 'disabled');
@@ -170,13 +204,16 @@ class Menu extends Widget
 			return Html::a($content, $url, $options);
 		}
 		
-		// dropdown menu
+		// sub-menu (dropdown)
 		if ( !empty($item['items']) ) {
-			$content .= '<div class="ui menu">'
-				. $this->renderItems($item['items'], $depth + 1)
-				. '</div>';
-			Html::addCssClass($options, 'ui dropdown');
-			$this->view->registerJs("$('#{$this->id} .ui.dropdown').dropdown();");
+			$optionsSub = ['class' => 'ui menu'];
+			if ( $this->allowDropdown ) {
+				Html::addCssClass($options, 'ui dropdown');
+				$this->view->registerJs("$('#{$this->id} .ui.dropdown').dropdown();");
+			} else {
+				$optionsSub = ['class' => 'menu'];
+			}
+			$content .= Html::tag('div', $this->renderItems($item['items'], $depth + 1), $optionsSub);
 		}
 		return Html::tag($tagName, $content, $options);
 	}

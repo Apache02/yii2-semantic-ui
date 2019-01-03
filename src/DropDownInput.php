@@ -12,7 +12,7 @@ class DropDownInput extends InputWidget
 {
 	public $items		= [];
 	
-	public $cssClass	= 'ui selection dropdown';
+	public $cssClass	= 'ui selection fluid dropdown';
 	public $options		= [];
 	public $placeholder	= true;
 	
@@ -24,9 +24,13 @@ class DropDownInput extends InputWidget
 	public $labelTemplate = '{icon}{label}';
 	
 	public $allowSearch	= false;
+	public $encodeLabels = true;
 	
 	// since semantic v2.4.0
 	public $clearable	= false;
+	
+	public $multiple = false;
+	public $maxSelections = null;
 	
 	
 	
@@ -45,6 +49,12 @@ class DropDownInput extends InputWidget
 		if ( $this->allowSearch ) {
 			Html::addCssClass($options, 'search');
 		}
+		if ( $this->multiple ) {
+			Html::addCssClass($options, 'multiple');
+		}
+		if ( $this->maxSelections > 1 ) {
+			Html::addCssClass($options, 'special');
+		}
 		
 		$placeholder = $this->placeholder;
 		$placeholder = ArrayHelper::remove($options, 'placeholder', $placeholder);
@@ -52,16 +62,20 @@ class DropDownInput extends InputWidget
 			$placeholder = $this->model->getAttributeLabel($this->attribute);
 		}
 		
-		echo Html::beginTag('div', $options);
-		echo Html::activeHiddenInput($this->model, $this->attribute, ['name'=>$this->name]);
-		echo Html::tag('div', $placeholder, ['class'=>'default text']);
-		echo Semantic::icon('dropdown');
-		echo $this->renderMenu($this->items);
-		echo '</div>';
+		echo Html::beginTag('div', $options),
+			Html::activeHiddenInput($this->model, $this->attribute, ['name'=>$this->name]),
+			Html::tag('div', $placeholder, ['class'=>'default text']),
+			Semantic::icon('dropdown'),
+			$this->renderMenu($this->items),
+			'</div>';
+		
 		// register js
 		$jsOptions = [];
 		if ( $this->clearable ) {
 			$jsOptions['clearable'] = true;
+		}
+		if ( $this->maxSelections > 1 ) {
+			$jsOptions['maxSelections'] = $this->maxSelections;
 		}
 		$this->view->registerJs("$('#{$this->id}').dropdown(".json_encode($jsOptions).");");
 	}
@@ -106,21 +120,21 @@ class DropDownInput extends InputWidget
 		
 		// resolve item content
 		$content = '';
-		if ( is_string($item) ) {
-			$content = $item;
-			$item = [];
-		} else if ( isset($item['content']) ) {
+		if ( isset($item['content']) ) {
 			$content = $item['content'];
 		} else {
 			$template = ArrayHelper::getValue($item, 'template', $this->labelTemplate);
 			
+			$label = $item['label'];
+			$encodeLabel = isset($item['encodeLabel']) ? $item['encodeLabel'] : $this->encodeLabels;
+			if ( $encodeLabel ) {
+				$label = Html::encode($item['label']);
+			}
 			$content = Semantic::renderTemplate($template, [
 				'icon'		=> isset($item['icon'])
 					? Semantic::icon($item['icon'])
 					: ( isset($item['flag']) ? Semantic::flag($item['flag']) : null ),
-				'label'		=> (isset($item['encodeLabel']) && !$item['encodeLabel'])
-					? $item['label']
-					: Html::encode($item['label']),
+				'label'		=> $label,
 			]);
 		}
 		
