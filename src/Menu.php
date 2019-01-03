@@ -89,11 +89,6 @@ class Menu extends Widget
 
 		return false;
 	}
-	/*
-	public function isItemActive ( $item )
-	{
-	}
-	*/
 	
 	public function run ()
 	{
