@@ -4,6 +4,7 @@ namespace semantic;
 
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
+use semantic\Semantic;
 
 
 
@@ -43,7 +44,7 @@ class ActiveField extends \yii\widgets\ActiveField
 		}
 		if ( !isset($this->parts['{icon}']) ) {
 			$this->parts['{icon}'] = $this->icon
-				? Html::tag('i', '', ['class'=>'icon '.$this->icon])
+				? Semantic::icon($this->icon)
 				: '';
 		}
 		if ( $this->enableLabel === false ) {
@@ -112,6 +113,27 @@ class ActiveField extends \yii\widgets\ActiveField
 		$this->form->view->registerJs('$("#'.$options['id'].'").dropdown();');
 		$this->parts['{input}'] = Html::activeDropDownList($this->model, $this->attribute, $items, $options);
 		return $this;
+	}
+	
+	public function staticText ( $options = [] )
+	{
+		$text = ArrayHelper::getValue($options, 'text');
+		if ( empty($text) ) {
+			$attribute = $this->attribute;
+			$text = ArrayHelper::getValue($this->model, $attribute);
+		}
+		if ( !isset($options['encodeText']) || $options['encodeText'] ) {
+			$text = Html::encode($text);
+		}
+		unset($options['encodeText']);
+		
+		$options['disabled'] = !empty($options['disabled']);
+		$options['readonly'] = true;
+		
+		$this->parts['{input}'] = Html::input('text', null, $text, $options);
+		$this->parts['{error}'] = '';
+		return $this;
+		
 	}
 
 }
